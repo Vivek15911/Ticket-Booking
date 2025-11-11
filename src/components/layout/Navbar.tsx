@@ -32,7 +32,7 @@ export const Navbar = ({ user }: NavbarProps) => {
   return (
     <nav className="border-b bg-card shadow-soft sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link to="/home" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="bg-gradient-primary p-2 rounded-lg">
             <Shield className="h-6 w-6 text-primary-foreground" />
           </div>

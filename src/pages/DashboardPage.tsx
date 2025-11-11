@@ -93,7 +93,7 @@ const DashboardPage = () => {
             <CardContent>
               <p className="text-muted-foreground mb-4">No tickets found</p>
               <button
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/home")}
                 className="text-primary hover:underline"
               >
                 Make your first booking

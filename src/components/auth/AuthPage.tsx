@@ -71,7 +71,7 @@ export const AuthPage = () => {
             title: "Welcome back!",
             description: "You have successfully logged in",
           });
-          navigate("/");
+          navigate("/home");
         }
       } else {
         if (formData.password !== formData.confirmPassword) {
@@ -98,7 +98,7 @@ export const AuthPage = () => {
           email: formData.email,
           password: formData.password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/home`,
             data: {
               full_name: formData.fullName,
             },
@@ -124,7 +124,7 @@ export const AuthPage = () => {
             title: "Account Created!",
             description: "Welcome to SecureBook. Redirecting...",
           });
-          navigate("/");
+          navigate("/home");
         }
       }
     } catch (error: any) {
