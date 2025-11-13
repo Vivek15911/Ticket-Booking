@@ -15,6 +15,19 @@ const indianStates = [
   "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 ];
 
+const venuesByState: Record<string, string[]> = {
+  "Delhi": ["India Habitat Centre", "The Lalit New Delhi", "ITC Maurya", "Ashok Hotel Convention Centre"],
+  "Maharashtra": ["Nehru Centre Mumbai", "The Taj Hotel", "Trident BKC", "Renaissance Convention Centre"],
+  "Karnataka": ["Bangalore International Centre", "ITC Gardenia", "The Leela Palace", "Sheraton Grand"],
+  "Tamil Nadu": ["Chennai Trade Centre", "ITC Grand Chola", "Taj Coromandel", "The Westin Chennai"],
+  "West Bengal": ["Biswa Bangla Convention Centre", "ITC Royal Bengal", "Taj Bengal", "The Park Kolkata"],
+  "Kerala": ["Le Meridien Convention Centre", "The Leela Kovalam", "Taj Malabar", "Grand Hyatt Kochi"],
+  "Gujarat": ["Ahmedabad Management Association", "The Fern Hotels", "Hyatt Regency", "Fortune Landmark"],
+  "Rajasthan": ["Jaipur Exhibition Centre", "ITC Rajputana", "The Lalit Jaipur", "Clarks Amer"],
+  "Uttar Pradesh": ["NDLS Convention Hall", "Taj Ganges", "Radisson Lucknow", "Hyatt Regency Lucknow"],
+  "Punjab": ["Punjab Engineering College", "JW Marriott Chandigarh", "Hyatt Regency", "Taj Chandigarh"],
+};
+
 const roomTypes = [
   "Conference Room",
   "Meeting Room",
@@ -24,10 +37,17 @@ const roomTypes = [
   "Co-working Space"
 ];
 
-const timeSlots = [
-  "Half Day (4 hours)",
+const visitTimes = [
+  "08:00 AM - 10:00 AM",
+  "11:00 AM - 01:00 PM",
+  "02:00 PM - 04:00 PM",
+  "05:00 PM - 07:00 PM",
+];
+
+const durations = [
+  "2 Hours",
+  "4 Hours",
   "Full Day (8 hours)",
-  "Evening (4 hours)",
   "Custom Duration"
 ];
 
@@ -44,10 +64,10 @@ export const RoomBookingForm = ({ onSubmit, loading }: RoomBookingFormProps) => 
     organization: "",
     bookingDate: "",
     state: "",
-    city: "",
     venueName: "",
     roomType: "",
-    timeSlot: "",
+    visitTime: "",
+    duration: "",
     numberOfAttendees: "1",
     requirements: "",
   });
@@ -60,6 +80,8 @@ export const RoomBookingForm = ({ onSubmit, loading }: RoomBookingFormProps) => 
     e.preventDefault();
     onSubmit(formData);
   };
+
+  const selectedStateVenues = formData.state ? venuesByState[formData.state] || [] : [];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -131,26 +153,24 @@ export const RoomBookingForm = ({ onSubmit, loading }: RoomBookingFormProps) => 
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="city">City *</Label>
-          <Input
-            id="city"
-            name="city"
-            value={formData.city}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="venueName">Venue Name *</Label>
-          <Input
-            id="venueName"
-            name="venueName"
-            placeholder="e.g., Business Hub, Hotel Name"
+          <Select
             value={formData.venueName}
-            onChange={handleInputChange}
+            onValueChange={(value) => setFormData({ ...formData, venueName: value })}
             required
-          />
+            disabled={!formData.state || selectedStateVenues.length === 0}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={formData.state ? "Select Venue" : "Select State First"} />
+            </SelectTrigger>
+            <SelectContent>
+              {selectedStateVenues.map((venue) => (
+                <SelectItem key={venue} value={venue}>
+                  {venue}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
@@ -187,19 +207,39 @@ export const RoomBookingForm = ({ onSubmit, loading }: RoomBookingFormProps) => 
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="timeSlot">Duration *</Label>
+          <Label htmlFor="visitTime">Visit Time *</Label>
           <Select
-            value={formData.timeSlot}
-            onValueChange={(value) => setFormData({ ...formData, timeSlot: value })}
+            value={formData.visitTime}
+            onValueChange={(value) => setFormData({ ...formData, visitTime: value })}
+            required
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Visit Time" />
+            </SelectTrigger>
+            <SelectContent>
+              {visitTimes.map((time) => (
+                <SelectItem key={time} value={time}>
+                  {time}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="duration">Duration *</Label>
+          <Select
+            value={formData.duration}
+            onValueChange={(value) => setFormData({ ...formData, duration: value })}
             required
           >
             <SelectTrigger>
               <SelectValue placeholder="Select Duration" />
             </SelectTrigger>
             <SelectContent>
-              {timeSlots.map((slot) => (
-                <SelectItem key={slot} value={slot}>
-                  {slot}
+              {durations.map((duration) => (
+                <SelectItem key={duration} value={duration}>
+                  {duration}
                 </SelectItem>
               ))}
             </SelectContent>

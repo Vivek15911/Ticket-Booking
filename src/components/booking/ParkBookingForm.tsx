@@ -15,6 +15,19 @@ const indianStates = [
   "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 ];
 
+const parksByState: Record<string, string[]> = {
+  "Delhi": ["Lodhi Garden", "India Gate Gardens", "Garden of Five Senses", "Nehru Park"],
+  "Maharashtra": ["Sanjay Gandhi National Park", "Shivaji Park", "Kamala Nehru Park", "Hanging Gardens"],
+  "Karnataka": ["Cubbon Park", "Lalbagh Botanical Garden", "Bannerghatta National Park", "Freedom Park"],
+  "Tamil Nadu": ["Marina Beach Park", "Guindy National Park", "Semmozhi Poonga", "Anna Nagar Tower Park"],
+  "West Bengal": ["Victoria Memorial Gardens", "Eco Park", "Central Park Kolkata", "Millennium Park"],
+  "Kerala": ["Napier Museum Park", "Kovalam Beach Park", "Thekkady Wildlife Park", "Marine Drive Park"],
+  "Gujarat": ["Sabarmati Riverfront", "Kankaria Lakefront", "Law Garden", "Victoria Garden"],
+  "Rajasthan": ["Central Park Jaipur", "Nahargarh Biological Park", "Ram Niwas Garden", "Saheliyon ki Bari"],
+  "Uttar Pradesh": ["Ambedkar Park", "Janeshwar Mishra Park", "Lohia Park", "Taj Nature Walk"],
+  "Punjab": ["Rock Garden", "Rose Garden Chandigarh", "Sukhna Lake Park", "Rambagh Garden"],
+};
+
 const activityTypes = [
   "Picnic",
   "Photography",
@@ -24,6 +37,13 @@ const activityTypes = [
   "Family Gathering",
   "Corporate Event",
   "Sports Activity"
+];
+
+const visitTimes = [
+  "06:00 AM - 09:00 AM",
+  "10:00 AM - 01:00 PM",
+  "02:00 PM - 05:00 PM",
+  "05:00 PM - 08:00 PM",
 ];
 
 interface ParkBookingFormProps {
@@ -37,8 +57,8 @@ export const ParkBookingForm = ({ onSubmit, loading }: ParkBookingFormProps) => 
     email: "",
     phone: "",
     bookingDate: "",
+    visitTime: "",
     state: "",
-    city: "",
     parkName: "",
     activityType: "",
     numberOfPeople: "1",
@@ -53,6 +73,8 @@ export const ParkBookingForm = ({ onSubmit, loading }: ParkBookingFormProps) => 
     e.preventDefault();
     onSubmit(formData);
   };
+
+  const selectedStateParks = formData.state ? parksByState[formData.state] || [] : [];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,26 +135,24 @@ export const ParkBookingForm = ({ onSubmit, loading }: ParkBookingFormProps) => 
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="city">City *</Label>
-          <Input
-            id="city"
-            name="city"
-            value={formData.city}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="parkName">Park Name *</Label>
-          <Input
-            id="parkName"
-            name="parkName"
-            placeholder="e.g., Lodhi Garden"
+          <Select
             value={formData.parkName}
-            onChange={handleInputChange}
+            onValueChange={(value) => setFormData({ ...formData, parkName: value })}
             required
-          />
+            disabled={!formData.state || selectedStateParks.length === 0}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={formData.state ? "Select Park" : "Select State First"} />
+            </SelectTrigger>
+            <SelectContent>
+              {selectedStateParks.map((park) => (
+                <SelectItem key={park} value={park}>
+                  {park}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
@@ -146,6 +166,26 @@ export const ParkBookingForm = ({ onSubmit, loading }: ParkBookingFormProps) => 
             onChange={handleInputChange}
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="visitTime">Visit Time *</Label>
+          <Select
+            value={formData.visitTime}
+            onValueChange={(value) => setFormData({ ...formData, visitTime: value })}
+            required
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Visit Time" />
+            </SelectTrigger>
+            <SelectContent>
+              {visitTimes.map((time) => (
+                <SelectItem key={time} value={time}>
+                  {time}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">

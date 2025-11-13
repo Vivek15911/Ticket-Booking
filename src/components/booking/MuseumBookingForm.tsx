@@ -15,6 +15,26 @@ const indianStates = [
   "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 ];
 
+const museumsByState: Record<string, string[]> = {
+  "Delhi": ["National Museum", "National Gallery of Modern Art", "Red Fort Archaeological Museum", "Gandhi Smriti Museum"],
+  "Maharashtra": ["Chhatrapati Shivaji Museum", "Dr. Bhau Daji Lad Museum", "Raja Dinkar Kelkar Museum", "Salar Jung Museum"],
+  "Karnataka": ["Government Museum Bangalore", "Visvesvaraya Industrial Museum", "National Gallery of Modern Art Bangalore", "HAL Aerospace Museum"],
+  "Tamil Nadu": ["Government Museum Chennai", "National Art Gallery", "Fort Museum", "DakshinaChitra Museum"],
+  "West Bengal": ["Indian Museum Kolkata", "Victoria Memorial", "Marble Palace", "Asutosh Museum"],
+  "Kerala": ["Napier Museum", "Kerala Folklore Museum", "Hill Palace Museum", "Indo-Portuguese Museum"],
+  "Gujarat": ["Calico Museum of Textiles", "Sardar Vallabhbhai Patel Museum", "Baroda Museum", "Kutch Museum"],
+  "Rajasthan": ["City Palace Museum Jaipur", "Albert Hall Museum", "Government Museum Bharatpur", "Umaid Bhawan Palace Museum"],
+  "Uttar Pradesh": ["State Museum Lucknow", "Allahabad Museum", "Sarnath Museum", "Mathura Museum"],
+  "Punjab": ["Punjab State War Heroes Museum", "Partition Museum", "Government Museum Chandigarh", "Maharaja Ranjit Singh Museum"],
+};
+
+const visitTimes = [
+  "10:00 AM - 12:00 PM",
+  "12:00 PM - 02:00 PM",
+  "02:00 PM - 04:00 PM",
+  "04:00 PM - 06:00 PM",
+];
+
 const ticketTypes = ["Adult", "Child (5-12 years)", "Senior Citizen", "Student", "Group (10+)"];
 
 interface MuseumBookingFormProps {
@@ -28,8 +48,8 @@ export const MuseumBookingForm = ({ onSubmit, loading }: MuseumBookingFormProps)
     email: "",
     phone: "",
     bookingDate: "",
+    visitTime: "",
     state: "",
-    city: "",
     museumName: "",
     ticketType: "",
     numberOfTickets: "1",
@@ -44,6 +64,8 @@ export const MuseumBookingForm = ({ onSubmit, loading }: MuseumBookingFormProps)
     e.preventDefault();
     onSubmit(formData);
   };
+
+  const selectedStateMuseums = formData.state ? museumsByState[formData.state] || [] : [];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -104,26 +126,24 @@ export const MuseumBookingForm = ({ onSubmit, loading }: MuseumBookingFormProps)
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="city">City *</Label>
-          <Input
-            id="city"
-            name="city"
-            value={formData.city}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="museumName">Museum Name *</Label>
-          <Input
-            id="museumName"
-            name="museumName"
-            placeholder="e.g., National Museum"
+          <Select
             value={formData.museumName}
-            onChange={handleInputChange}
+            onValueChange={(value) => setFormData({ ...formData, museumName: value })}
             required
-          />
+            disabled={!formData.state || selectedStateMuseums.length === 0}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={formData.state ? "Select Museum" : "Select State First"} />
+            </SelectTrigger>
+            <SelectContent>
+              {selectedStateMuseums.map((museum) => (
+                <SelectItem key={museum} value={museum}>
+                  {museum}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
@@ -137,6 +157,26 @@ export const MuseumBookingForm = ({ onSubmit, loading }: MuseumBookingFormProps)
             onChange={handleInputChange}
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="visitTime">Visit Time *</Label>
+          <Select
+            value={formData.visitTime}
+            onValueChange={(value) => setFormData({ ...formData, visitTime: value })}
+            required
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Visit Time" />
+            </SelectTrigger>
+            <SelectContent>
+              {visitTimes.map((time) => (
+                <SelectItem key={time} value={time}>
+                  {time}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">

@@ -17,15 +17,22 @@ const indianStates = [
 const librariesByState: Record<string, string[]> = {
   "Delhi": ["National Library of India", "Delhi Public Library", "Nehru Memorial Library", "American Library"],
   "Maharashtra": ["Asiatic Society Library", "Mumbai University Library", "Pune Central Library", "British Council Library"],
-  "Karnataka": ["State Central Library Bangalore", "Bangalore City Central Library", "Mysore Regional Library"],
-  "Tamil Nadu": ["Connemara Public Library", "Anna Centenary Library", "Madras Literary Society"],
-  "West Bengal": ["National Library Kolkata", "Ramakrishna Mission Library", "Calcutta Public Library"],
-  "Kerala": ["State Central Library Trivandrum", "Calicut Public Library", "Kochi Public Library"],
-  "Gujarat": ["Gujarat Vidyapith Library", "Ahmedabad Public Library", "Baroda Central Library"],
-  "Rajasthan": ["Rajasthan State Archives", "Jaipur Public Library", "Udaipur City Library"],
-  "Uttar Pradesh": ["Lucknow Public Library", "Allahabad Public Library", "Varanasi Library"],
-  "Punjab": ["Punjab State Library", "Chandigarh Public Library", "Patiala State Library"],
+  "Karnataka": ["State Central Library Bangalore", "Bangalore City Central Library", "Mysore Regional Library", "KPSC Library"],
+  "Tamil Nadu": ["Connemara Public Library", "Anna Centenary Library", "Madras Literary Society", "Chennai City Library"],
+  "West Bengal": ["National Library Kolkata", "Ramakrishna Mission Library", "Calcutta Public Library", "Alipore Public Library"],
+  "Kerala": ["State Central Library Trivandrum", "Calicut Public Library", "Kochi Public Library", "Ernakulam District Library"],
+  "Gujarat": ["Gujarat Vidyapith Library", "Ahmedabad Public Library", "Baroda Central Library", "Surat City Library"],
+  "Rajasthan": ["Rajasthan State Archives", "Jaipur Public Library", "Udaipur City Library", "Jodhpur Public Library"],
+  "Uttar Pradesh": ["Lucknow Public Library", "Allahabad Public Library", "Varanasi Library", "Agra Public Library"],
+  "Punjab": ["Punjab State Library", "Chandigarh Public Library", "Patiala State Library", "Ludhiana District Library"],
 };
+
+const visitTimes = [
+  "09:00 AM - 11:00 AM",
+  "12:00 PM - 02:00 PM",
+  "03:00 PM - 05:00 PM",
+  "06:00 PM - 08:00 PM",
+];
 
 interface LibraryBookingFormProps {
   onSubmit: (data: any) => void;
@@ -37,6 +44,7 @@ export const LibraryBookingForm = ({ onSubmit, loading }: LibraryBookingFormProp
     fullName: "",
     email: "",
     bookingDate: "",
+    visitTime: "",
     numberOfPeople: "1",
     state: "",
     library: "",
@@ -90,6 +98,26 @@ export const LibraryBookingForm = ({ onSubmit, loading }: LibraryBookingFormProp
             onChange={handleInputChange}
             required
           />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="visitTime">Visit Time *</Label>
+          <Select
+            value={formData.visitTime}
+            onValueChange={(value) => setFormData({ ...formData, visitTime: value })}
+            required
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Visit Time" />
+            </SelectTrigger>
+            <SelectContent>
+              {visitTimes.map((time) => (
+                <SelectItem key={time} value={time}>
+                  {time}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">

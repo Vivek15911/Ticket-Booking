@@ -14,12 +14,24 @@ const indianStates = [
   "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
 ];
 
+const theatersByState: Record<string, string[]> = {
+  "Delhi": ["PVR Saket", "INOX Nehru Place", "Cinepolis DLF Place", "DT Cinemas Vasant Kunj"],
+  "Maharashtra": ["PVR Phoenix Mumbai", "INOX Nariman Point", "Cinepolis Viviana Mall", "Carnival Cinema Pune"],
+  "Karnataka": ["PVR Forum Mall", "INOX Garuda Mall", "Cinepolis Royal Meenakshi", "Gopalan Cinemas"],
+  "Tamil Nadu": ["PVR Grand Mall", "INOX Express Avenue", "Sathyam Cinemas", "AGS Cinemas"],
+  "West Bengal": ["INOX South City", "PVR Diamond Plaza", "Cinepolis Acropolis", "Priya Cinema"],
+  "Kerala": ["PVR Lulu Mall", "Cinepolis Centre Square", "INOX Oberon Mall", "Kairali Sree"],
+  "Gujarat": ["PVR Acropolis", "INOX Ahmedabad One", "Cinepolis Alpha One", "Rajhans Cinemas"],
+  "Rajasthan": ["PVR Pink Square", "INOX Crystal Palm", "Cinepolis World Trade Park", "Raj Mandir Cinema"],
+  "Uttar Pradesh": ["PVR Sahara Ganj", "INOX Riverside Mall", "Cinepolis Fun Republic", "Wave Cinemas"],
+  "Punjab": ["PVR Elante Mall", "INOX Chandigarh", "Cinepolis Paras Downtown", "DT Cinemas Ludhiana"],
+};
+
 const showTimes = [
   "10:00 AM",
   "01:00 PM",
   "04:00 PM",
   "07:00 PM",
-  "10:00 PM"
 ];
 
 const seatTypes = ["Regular", "Premium", "VIP", "Box Seats"];
@@ -36,7 +48,6 @@ export const TheaterBookingForm = ({ onSubmit, loading }: TheaterBookingFormProp
     phone: "",
     bookingDate: "",
     state: "",
-    city: "",
     theaterName: "",
     movieShow: "",
     showTime: "",
@@ -52,6 +63,8 @@ export const TheaterBookingForm = ({ onSubmit, loading }: TheaterBookingFormProp
     e.preventDefault();
     onSubmit(formData);
   };
+
+  const selectedStateTheaters = formData.state ? theatersByState[formData.state] || [] : [];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,26 +125,24 @@ export const TheaterBookingForm = ({ onSubmit, loading }: TheaterBookingFormProp
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="city">City *</Label>
-          <Input
-            id="city"
-            name="city"
-            value={formData.city}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="theaterName">Theater Name *</Label>
-          <Input
-            id="theaterName"
-            name="theaterName"
-            placeholder="e.g., PVR Cinemas"
+          <Select
             value={formData.theaterName}
-            onChange={handleInputChange}
+            onValueChange={(value) => setFormData({ ...formData, theaterName: value })}
             required
-          />
+            disabled={!formData.state || selectedStateTheaters.length === 0}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={formData.state ? "Select Theater" : "Select State First"} />
+            </SelectTrigger>
+            <SelectContent>
+              {selectedStateTheaters.map((theater) => (
+                <SelectItem key={theater} value={theater}>
+                  {theater}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">

@@ -4,19 +4,46 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
+const indianStates = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
+  "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
+  "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
+  "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu",
+  "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
+];
+
+const sportsFacilitiesByState: Record<string, string[]> = {
+  "Delhi": ["Jawaharlal Nehru Stadium", "Thyagaraj Sports Complex", "Siri Fort Sports Complex", "Dr. SPM Swimming Pool Complex"],
+  "Maharashtra": ["DY Patil Stadium", "Andheri Sports Complex", "Shivaji Park", "Balewadi Sports Complex"],
+  "Karnataka": ["Sree Kanteerava Stadium", "Bangalore Football Stadium", "KPSC Sports Complex", "Cubbon Park Sports Arena"],
+  "Tamil Nadu": ["MA Chidambaram Stadium", "Nehru Stadium Chennai", "YMCA Sports Complex", "Anna Stadium"],
+  "West Bengal": ["Eden Gardens", "Salt Lake Stadium", "Netaji Indoor Stadium", "Rabindra Sarobar Complex"],
+  "Kerala": ["Jawaharlal Nehru Stadium Kochi", "Greenfield Stadium", "Jimmy George Indoor Stadium", "Calicut Sports Hub"],
+  "Gujarat": ["Narendra Modi Stadium", "Sardar Patel Stadium", "Ahmedabad Sports Club", "Trans Stadia Complex"],
+  "Rajasthan": ["Sawai Mansingh Stadium", "SMS Stadium Indoor Complex", "Jaipur Sports Academy", "Udaipur Sports Center"],
+  "Uttar Pradesh": ["Green Park Stadium", "Buddha International Circuit", "Lucknow Sports Complex", "Agra Sports Hub"],
+  "Punjab": ["PCA Stadium", "Guru Nanak Stadium", "Ludhiana Sports Complex", "Amritsar Sports Academy"],
+};
+
 const sportTypes = [
   "Cricket", "Football", "Badminton", "Tennis", "Basketball", 
   "Swimming", "Table Tennis", "Squash", "Volleyball", "Hockey"
 ];
 
-const timeSlots = [
+const visitTimes = [
   "06:00 AM - 08:00 AM",
-  "08:00 AM - 10:00 AM",
   "10:00 AM - 12:00 PM",
-  "12:00 PM - 02:00 PM",
   "02:00 PM - 04:00 PM",
-  "04:00 PM - 06:00 PM",
   "06:00 PM - 08:00 PM",
+];
+
+const durations = [
+  "1 Hour",
+  "2 Hours",
+  "3 Hours",
+  "4 Hours",
 ];
 
 interface SportsBookingFormProps {
@@ -30,10 +57,12 @@ export const SportsBookingForm = ({ onSubmit, loading }: SportsBookingFormProps)
     email: "",
     phone: "",
     bookingDate: "",
-    sportType: "",
-    timeSlot: "",
-    numberOfPlayers: "1",
+    state: "",
     facilityName: "",
+    sportType: "",
+    visitTime: "",
+    duration: "",
+    numberOfPlayers: "1",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,6 +73,8 @@ export const SportsBookingForm = ({ onSubmit, loading }: SportsBookingFormProps)
     e.preventDefault();
     onSubmit(formData);
   };
+
+  const selectedStateFacilities = formData.state ? sportsFacilitiesByState[formData.state] || [] : [];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -84,6 +115,47 @@ export const SportsBookingForm = ({ onSubmit, loading }: SportsBookingFormProps)
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="state">State *</Label>
+          <Select
+            value={formData.state}
+            onValueChange={(value) => setFormData({ ...formData, state: value, facilityName: "" })}
+            required
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select State" />
+            </SelectTrigger>
+            <SelectContent>
+              {indianStates.map((state) => (
+                <SelectItem key={state} value={state}>
+                  {state}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="facilityName">Facility Name *</Label>
+          <Select
+            value={formData.facilityName}
+            onValueChange={(value) => setFormData({ ...formData, facilityName: value })}
+            required
+            disabled={!formData.state || selectedStateFacilities.length === 0}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={formData.state ? "Select Facility" : "Select State First"} />
+            </SelectTrigger>
+            <SelectContent>
+              {selectedStateFacilities.map((facility) => (
+                <SelectItem key={facility} value={facility}>
+                  {facility}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="sportType">Sport Type *</Label>
           <Select
             value={formData.sportType}
@@ -104,18 +176,6 @@ export const SportsBookingForm = ({ onSubmit, loading }: SportsBookingFormProps)
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="facilityName">Facility Name *</Label>
-          <Input
-            id="facilityName"
-            name="facilityName"
-            placeholder="e.g., XYZ Sports Complex"
-            value={formData.facilityName}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="bookingDate">Booking Date *</Label>
           <Input
             id="bookingDate"
@@ -129,19 +189,39 @@ export const SportsBookingForm = ({ onSubmit, loading }: SportsBookingFormProps)
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="timeSlot">Time Slot *</Label>
+          <Label htmlFor="visitTime">Visit Time *</Label>
           <Select
-            value={formData.timeSlot}
-            onValueChange={(value) => setFormData({ ...formData, timeSlot: value })}
+            value={formData.visitTime}
+            onValueChange={(value) => setFormData({ ...formData, visitTime: value })}
             required
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select Time Slot" />
+              <SelectValue placeholder="Select Visit Time" />
             </SelectTrigger>
             <SelectContent>
-              {timeSlots.map((slot) => (
-                <SelectItem key={slot} value={slot}>
-                  {slot}
+              {visitTimes.map((time) => (
+                <SelectItem key={time} value={time}>
+                  {time}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="duration">Duration *</Label>
+          <Select
+            value={formData.duration}
+            onValueChange={(value) => setFormData({ ...formData, duration: value })}
+            required
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select Duration" />
+            </SelectTrigger>
+            <SelectContent>
+              {durations.map((duration) => (
+                <SelectItem key={duration} value={duration}>
+                  {duration}
                 </SelectItem>
               ))}
             </SelectContent>
